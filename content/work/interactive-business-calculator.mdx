@@ -1,0 +1,41 @@
+---
+title: "Interactive Business Calculator"
+slug: "interactive-business-calculator"
+summary: "A JavaScript calculator that models the business's own numbers, built so a non-technical executive reaches a defensible figure in under a minute."
+role: "Full-Stack Engineer"
+stack: ["JavaScript", "Data modeling"]
+year: "2023"
+---
+
+## Problem
+
+Executives needed a way to reason about a business scenario in real time —
+during a call, in front of a client — without waiting on someone to build a
+spreadsheet model and walk them through it.
+
+## Approach
+
+The hard part wasn't the arithmetic, it was the interface: hiding the
+underlying data model behind a small number of inputs an executive could
+actually reason about, while keeping the calculation itself transparent enough
+to defend if someone pushed back on the number.
+
+<MediaPlaceholder label="Calculator interface screenshot" />
+
+## Architecture
+
+- A JavaScript data model encoding the business logic behind the calculation
+- A small, constrained input surface — the interface deliberately doesn't
+  expose every variable the model tracks
+- Real-time recalculation as inputs change, so the output updates immediately
+
+## Result
+
+A non-technical executive can reach a defensible number from the tool in under
+a minute, without needing someone else to run the model for them.
+
+## What I'd do differently
+
+I'd add a visible breakdown of how the final number was derived, collapsed by
+default. Executives trusted the number more when they could expand and check
+the math themselves rather than take it on faith.

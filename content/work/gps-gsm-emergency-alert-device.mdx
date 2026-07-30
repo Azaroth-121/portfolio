@@ -1,0 +1,41 @@
+---
+title: "GPS + GSM Emergency Alert Device"
+slug: "gps-gsm-emergency-alert-device"
+summary: "A battery-powered Arduino device that captures GPS location and sends it out over GSM at the press of a button."
+role: "Solo builder"
+stack: ["Arduino", "GSM module", "GPS module", "Embedded systems"]
+year: "2023"
+---
+
+## Problem
+
+A useful emergency alert needs to work without wifi, without a smartphone app
+running in the background, and without depending on a network the user has to
+set up themselves. That ruled out anything wifi- or Bluetooth-based.
+
+## Approach
+
+I built around GSM specifically because it uses the existing cellular network
+— no pairing, no app, no setup step that could fail when it mattered. The
+logic had to run entirely on the embedded side: read GPS, format a message,
+send it over GSM, on battery power, without a host device.
+
+<MediaPlaceholder label="Device photo" />
+
+## Architecture
+
+- Arduino as the controller
+- GPS module for location capture
+- GSM module for sending the location out over the cellular network
+- Battery-powered, standalone operation with no host device required
+
+## Result
+
+A working standalone device that captures location and sends it over GSM on
+button press, running entirely on battery power.
+
+## What I'd do differently
+
+I'd add a low-battery pre-warning transmission — a device that dies silently
+right when it's needed defeats the purpose. Better to send one last "battery
+low" message before it goes dark.

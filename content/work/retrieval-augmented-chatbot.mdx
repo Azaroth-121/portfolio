@@ -1,0 +1,53 @@
+---
+title: "Retrieval-Augmented Chatbot System"
+slug: "retrieval-augmented-chatbot"
+summary: "A customer-facing RAG chatbot tuned for retrieval accuracy over recall, shipped as a production chat interface on a company's own documents."
+role: "AI Implementation Engineer"
+stack: ["RAG architecture", "Vector search", "Prompt engineering", "Supabase", "TypeScript"]
+year: "2024"
+---
+
+## Problem
+
+A B2B technology company needed a customer-facing chatbot that could answer
+questions accurately from its own internal documentation, without hallucinating
+answers or surfacing irrelevant context. Generic LLM responses weren't
+acceptable — every answer had to be traceable back to a real source document.
+
+## Approach
+
+I treated retrieval quality as the actual product, not the language model. That
+meant spending most of the effort on chunking strategy and retrieval tuning
+rather than prompt tricks: how documents were split, how much overlap chunks
+carried, and what similarity threshold counted as "relevant enough" to include
+in context.
+
+I optimized deliberately for precision over recall — a chatbot that says "I
+don't know" is more trustworthy than one that answers confidently from a weak
+match.
+
+<MediaPlaceholder label="Retrieval pipeline diagram" />
+
+## Architecture
+
+- Document ingestion and chunking pipeline feeding a vector store on Supabase
+- Embedding and similarity search tuned against a relevance threshold, not a
+  fixed top-k
+- A prompt layer that injects only retrieved chunks above that threshold, with
+  the model instructed to defer rather than guess when nothing qualifies
+- A customer-facing chat interface wired to the retrieval and generation layer
+
+<MediaPlaceholder label="Chat interface screenshot" />
+
+## Result
+
+Shipped as a working, customer-facing chat interface backed entirely by the
+company's own documents, with retrieval tuned to prioritize correct answers
+over broad coverage.
+
+## What I'd do differently
+
+I'd invest earlier in a retrieval evaluation harness — a small labeled set of
+question/expected-source pairs — instead of tuning thresholds by feel. It would
+have caught chunking regressions faster and made the accuracy-over-recall
+tradeoff a measured decision instead of a judgment call.

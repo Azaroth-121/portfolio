@@ -1,0 +1,47 @@
+---
+title: "Voice & Call Routing Automation"
+slug: "voice-call-routing-automation"
+summary: "Telephony automation that captures caller intent and routes, schedules, and logs calls straight into the CRM without a human dispatcher."
+role: "Automation & Integrations Engineer"
+stack: ["n8n", "Telephony APIs", "Intent classification", "CRM integration"]
+year: "2024"
+---
+
+## Problem
+
+Inbound calls were being triaged manually — someone had to answer, figure out
+intent, and either route the call or take down details by hand. That doesn't
+scale, and it drops information between the call and the CRM.
+
+## Approach
+
+I mapped the manual process first: what a human dispatcher actually listened
+for, how they decided where a call went, and what they wrote down afterward.
+Only once that process was well understood did I automate it — encoding a
+process nobody had run manually yet would have meant automating guesses.
+
+<MediaPlaceholder label="Call routing flow diagram" />
+
+## Architecture
+
+- Telephony API integration for inbound call handling
+- Intent capture logic to classify the reason for the call
+- Routing rules that send the call to the right destination or queue based on
+  captured intent
+- Scheduling logic for calls that resolve to a booking
+- Automated CRM logging, so every call leaves a record
+  without manual entry
+
+<MediaPlaceholder label="CRM record example" />
+
+## Result
+
+Calls are captured, classified, routed, and logged into the CRM automatically,
+replacing a manual dispatch step and removing the gap between "the call
+happened" and "it's in the system."
+
+## What I'd do differently
+
+I'd build the intent-classification confidence threshold in from day one rather
+than adding it after the fact — low-confidence calls should fall back to a
+human immediately instead of being routed on a best guess.

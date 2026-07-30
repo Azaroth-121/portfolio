@@ -1,65 +1,146 @@
-import Image from "next/image";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { siteConfig } from "@/config/site";
+import { getAllWork } from "@/lib/content";
+import { buildMetadata } from "@/lib/metadata";
+import { HeroSceneLoader } from "@/components/hero-scene/hero-scene-loader";
+
+export const metadata: Metadata = buildMetadata({
+  title: siteConfig.title,
+  description: siteConfig.description,
+  path: "/",
+});
+
+const SELECTED_WORK_SLUGS = [
+  "retrieval-augmented-chatbot",
+  "voice-call-routing-automation",
+  "calcsprint",
+  "gps-gsm-emergency-alert-device",
+];
+
+const CAPABILITIES = [
+  {
+    title: "RAG & AI systems",
+    items: ["RAG architecture", "Vector search", "Prompt engineering", "Conversational AI"],
+  },
+  {
+    title: "Automation workflows",
+    items: ["n8n", "Make.com", "CRM integration (HubSpot)", "Telephony (RingCentral)"],
+  },
+  {
+    title: "Full-stack web",
+    items: ["React", "TypeScript", "Tailwind CSS", "WordPress", "Supabase"],
+  },
+  {
+    title: "Embedded hardware",
+    items: ["Arduino", "KiCad PCB design"],
+  },
+];
 
 export default function Home() {
+  const allWork = getAllWork();
+  const selected = SELECTED_WORK_SLUGS.map((slug) =>
+    allWork.find((entry) => entry.slug === slug)
+  ).filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <>
+      <section className="relative min-h-[380px] overflow-hidden border-b border-border sm:min-h-[440px]">
+        <HeroSceneLoader />
+        <div className="relative z-10 mx-auto max-w-[70ch] px-6 py-16">
+          <h1 className="font-mono text-3xl font-medium tracking-tight sm:text-4xl">
+            {siteConfig.name}
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mt-4 max-w-[52ch] text-lg">
+            Kurt Rainier Sacay is an AI implementation and full-stack engineer
+            based in Davao City, Philippines, available for RAG systems,
+            automation workflows, and web platform builds — for remote
+            clients worldwide and local Davao businesses.
           </p>
+          <p className="mt-4 max-w-[52ch] text-lg text-muted">
+            I don&apos;t consider something done until it&apos;s still
+            running six months later without me.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-4">
+            <Link
+              href="/contact"
+              className="rounded bg-foreground px-5 py-2.5 font-mono text-sm text-background transition-opacity hover:opacity-90"
+            >
+              Get in touch
+            </Link>
+            <Link
+              href="/work"
+              className="rounded border border-border px-5 py-2.5 font-mono text-sm transition-colors hover:border-accent"
+            >
+              See the work
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </section>
+
+      <div className="mx-auto max-w-[70ch] px-6 py-16">
+      <section className="mt-0">
+        <h2 className="font-mono text-sm font-medium uppercase tracking-wide text-muted">
+          Selected work
+        </h2>
+        <ul className="mt-6 flex flex-col gap-8">
+          {selected.map((entry) => (
+            <li key={entry.slug} className="border-t border-border pt-6">
+              <article>
+                <h3 className="font-mono text-lg font-medium">
+                  <Link
+                    href={`/work/${entry.slug}`}
+                    prefetch={false}
+                    className="hover:text-accent"
+                  >
+                    {entry.title}
+                  </Link>
+                </h3>
+                <p className="mt-2 text-muted">{entry.summary}</p>
+              </article>
+            </li>
+          ))}
+        </ul>
+        <Link
+          href="/work"
+          prefetch={false}
+          className="mt-6 inline-block font-mono text-sm text-accent underline underline-offset-4"
+        >
+          View all work →
+        </Link>
+      </section>
+
+      <section className="mt-20">
+        <h2 className="font-mono text-sm font-medium uppercase tracking-wide text-muted">
+          Capabilities
+        </h2>
+        <dl className="mt-6 grid gap-8 sm:grid-cols-2">
+          {CAPABILITIES.map((group) => (
+            <div key={group.title} className="border-t border-border pt-6">
+              <dt className="font-mono text-base font-medium">{group.title}</dt>
+              <dd className="mt-2 text-muted">{group.items.join(", ")}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      <section className="mt-20 border-t border-border pt-10">
+        <h2 className="font-mono text-xl font-medium tracking-tight">
+          Have something to build?
+        </h2>
+        <p className="mt-3 text-muted">
+          I take on a limited number of engagements at a time. If you need a
+          RAG system, an automation workflow, or a production web platform,
+          get in touch.
+        </p>
+        <Link
+          href="/contact"
+          className="mt-5 inline-block rounded bg-foreground px-5 py-2.5 font-mono text-sm text-background transition-opacity hover:opacity-90"
+        >
+          Get in touch
+        </Link>
+      </section>
+      </div>
+    </>
   );
 }

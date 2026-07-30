@@ -1,0 +1,45 @@
+---
+title: "Enterprise Marketing Site Architecture"
+slug: "enterprise-marketing-site-architecture"
+summary: "A WordPress marketing site rebuilt around clean information architecture, structured data, and CRM-connected lead capture — with page speed treated as a feature."
+role: "Full-Stack Engineer"
+stack: ["WordPress", "SEO/AEO", "CRM integration", "Structured data"]
+year: "2024"
+---
+
+## Problem
+
+The existing marketing site was slow, its information architecture didn't
+match how prospects actually searched, and leads captured through its forms
+weren't reliably reaching the CRM.
+
+## Approach
+
+I started from search intent and page speed as the two non-negotiables, then
+worked backward into information architecture: what pages should exist, how
+they should link to each other, and what structured data would let search
+engines and AI answer engines understand the page without guessing.
+
+<MediaPlaceholder label="Site architecture / sitemap diagram" />
+
+## Architecture
+
+- WordPress build with an information architecture organized around real
+  search intent rather than internal org structure
+- Structured data (schema.org markup) across key page types
+- Page-speed work: image optimization, render-blocking cleanup, caching
+- Lead capture forms wired directly into the CRM so no submission gets lost
+
+<MediaPlaceholder label="Page speed before/after" />
+
+## Result
+
+A rebuilt marketing site with faster page loads, an information architecture
+that matches how prospects search, and lead capture that reliably reaches the
+CRM.
+
+## What I'd do differently
+
+I'd set up page-speed monitoring as part of the build itself, not as a
+post-launch check — content teams add images and embeds over time, and without
+a budget enforced at publish time, speed erodes quietly.

@@ -1,0 +1,40 @@
+---
+title: "Centralized PCB Prototype"
+slug: "centralized-pcb-prototype"
+summary: "A custom PCB in KiCad that integrates an Arduino Nano, GSM, GPS, and battery input onto a single board instead of a breadboard tangle."
+role: "Solo builder"
+stack: ["KiCad", "PCB design", "Arduino Nano", "GSM", "GPS"]
+year: "2023"
+---
+
+## Problem
+
+A breadboard prototype with an Arduino Nano, GSM module, GPS module, and
+battery input works, but it isn't something you can hand to anyone or trust
+outside a desk. Loose wiring fails exactly when you don't want it to.
+
+## Approach
+
+I routed a single board that centralizes power distribution and signal
+routing for all four components, designed to be reliable unattended rather
+than just functional on a bench.
+
+<MediaPlaceholder label="PCB layout / board photo" />
+
+## Architecture
+
+- KiCad schematic and PCB layout
+- Arduino Nano as the controller footprint
+- Integrated GSM and GPS module connections
+- Battery input with power routing to all components on one board
+
+## Result
+
+A single-board prototype that replaces a breadboard build, integrating
+controller, GSM, GPS, and battery input into one reliable unit.
+
+## What I'd do differently
+
+I'd add test points on the board for the power and signal lines I ended up
+probing by hand — small thing, but it would have cut debugging time
+significantly during bring-up.

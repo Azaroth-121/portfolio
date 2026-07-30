@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kurt Rainier Sacay — portfolio
 
-## Getting Started
+Production portfolio site. Next.js 16 (App Router, Turbopack), TypeScript,
+Tailwind CSS v4, MDX content, react-three-fiber for the decorative hero scene.
 
-First, run the development server:
+## Running locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build   # production build
+npm run start   # serve the production build
+npm run lint    # eslint
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Where content lives
 
-## Learn More
+- `content/work/*.mdx` — case studies. Frontmatter: `title`, `slug`, `summary`,
+  `role`, `stack`, `year`, optional `outcome`, `links`, `cover`.
+- `content/notes/*.mdx` — blog posts. Frontmatter: `title`, `slug`, `summary`,
+  `date`.
+- `src/config/site.ts` — name, links, email, location, nav. All copy that
+  isn't page-specific prose lives here, not hardcoded in components.
+- `src/config/pricing.ts` — service starting prices (currently `TODO`
+  placeholders — see below).
 
-To learn more about Next.js, take a look at the following resources:
+### Adding a case study
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Add a new `.mdx` file to `content/work/` with the frontmatter fields above.
+2. Body structure: `## Problem`, `## Approach`, `## Architecture`, `## Result`,
+   `## What I'd do differently`. Use `<MediaPlaceholder label="..." />` for any
+   screenshot/diagram slot that doesn't have a real asset yet.
+3. It shows up automatically on `/work` and at `/work/[slug]` — no route code
+   to touch. `generateStaticParams` picks it up from the filesystem.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Adding a note
 
-## Deploy on Vercel
+Same pattern under `content/notes/`. Don't add filler posts — an empty section
+is better than thin AI-generated content for SEO and for readers.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Known TODOs before launch
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `NEXT_PUBLIC_SITE_URL` — set in Vercel to the real production domain.
+  Currently falls back to `localhost:3000`.
+- `src/config/pricing.ts` — real starting prices, currently `"TODO"`.
+- `RESEND_API_KEY` / `RESEND_FROM_EMAIL` — set in Vercel to enable the
+  contact form's email delivery (`src/app/contact/actions.ts`). Until set,
+  the form tells visitors to email directly instead.
+- GitHub link in `src/config/site.ts` points to an account with no bio,
+  display name, or README — populate before linking it from client-facing
+  copy.
+- `year` frontmatter on every case study in `content/work/` is `"TODO"` —
+  replace with the real year once confirmed.
+- Every case study has `<MediaPlaceholder />` slots for screenshots/diagrams
+  that don't exist yet.
+
+## Stack notes
+
+- Server Components by default; `"use client"` only for the theme toggle,
+  the contact form, and the 3D scene.
+- The 3D hero scene (`src/components/hero-scene/`) lazy-loads client-side
+  only (`next/dynamic`, `ssr: false`), never renders under
+  `prefers-reduced-motion`, never renders below a 768px viewport, and pauses
+  its render loop when off-screen or the tab is hidden.
+- MDX is compiled at request time via `next-mdx-remote/rsc` from files read
+  off disk (`src/lib/content.ts`) — no CMS, no database.
