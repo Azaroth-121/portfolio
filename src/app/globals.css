@@ -3,20 +3,52 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ------------------------------------------------------------------------
+   Tokens. Champagne accent + an iridescent violet→cyan pair, over a deep
+   ink (dark) or pearl (light) field. Glass tokens drive every panel.
+   ------------------------------------------------------------------------ */
 :root {
-  --background: #f7f6f3;
-  --foreground: #0b0b0a;
-  --muted: #6b675f;
-  --accent: #a8501f;
-  --border: #e0dcd3;
+  --background: #eceef4;
+  --foreground: #0d0f16;
+  --muted: #545a6b;
+  --accent: #8a5c12;
+  --accent-2: #6a55e6;
+  --accent-3: #0b8fa6;
+  --border: rgba(13, 15, 22, 0.1);
+
+  --glass: rgba(255, 255, 255, 0.52);
+  --glass-strong: rgba(255, 255, 255, 0.72);
+  --glass-edge: rgba(255, 255, 255, 0.9);
+  --glass-line: rgba(13, 15, 22, 0.08);
+  --glass-shadow: 0 1px 1px rgba(13, 15, 22, 0.04), 0 12px 40px -12px rgba(30, 35, 70, 0.22);
+  --spot: rgba(106, 85, 230, 0.12);
+
+  --aurora-1: rgba(122, 104, 255, 0.34);
+  --aurora-2: rgba(32, 190, 214, 0.26);
+  --aurora-3: rgba(232, 180, 96, 0.32);
+  --grain-opacity: 0.05;
 }
 
 .dark {
-  --background: #0b0b0a;
-  --foreground: #f7f6f3;
-  --muted: #a6a196;
-  --accent: #e2884f;
-  --border: #26241f;
+  --background: #05060a;
+  --foreground: #f3f0e8;
+  --muted: #a3a0b4;
+  --accent: #e6c88d;
+  --accent-2: #9d8cff;
+  --accent-3: #63d8ec;
+  --border: rgba(255, 255, 255, 0.08);
+
+  --glass: rgba(255, 255, 255, 0.04);
+  --glass-strong: rgba(255, 255, 255, 0.07);
+  --glass-edge: rgba(255, 255, 255, 0.16);
+  --glass-line: rgba(255, 255, 255, 0.07);
+  --glass-shadow: 0 1px 1px rgba(0, 0, 0, 0.3), 0 24px 60px -20px rgba(0, 0, 0, 0.7);
+  --spot: rgba(230, 200, 141, 0.09);
+
+  --aurora-1: rgba(108, 86, 255, 0.3);
+  --aurora-2: rgba(30, 170, 200, 0.2);
+  --aurora-3: rgba(214, 160, 80, 0.16);
+  --grain-opacity: 0.06;
 }
 
 @theme inline {
@@ -24,9 +56,570 @@
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-3: var(--accent-3);
   --color-border: var(--border);
   --font-sans: var(--font-body);
   --font-mono: var(--font-signature);
+  --font-serif: var(--font-display);
+}
+
+html {
+  color-scheme: light;
+  scroll-behavior: smooth;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--background);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Everything below is in the components layer so Tailwind utilities on the
+   same element still win (e.g. `lg:sticky` over `.glass { position: relative }`). */
+@layer components {
+
+/* ------------------------------------------------------------------------
+   Ambient field: three soft light sources drifting behind everything, plus
+   a static film grain. One fixed, composited layer; only transforms animate.
+   ------------------------------------------------------------------------ */
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+
+.aurora span {
+  position: absolute;
+  width: 70vmax;
+  height: 70vmax;
+  border-radius: 9999px;
+  will-change: transform;
+}
+
+.aurora span:nth-child(1) {
+  top: -30vmax;
+  left: -18vmax;
+  background: radial-gradient(closest-side, var(--aurora-1), transparent);
+  animation: drift-a 48s ease-in-out infinite alternate;
+}
+
+.aurora span:nth-child(2) {
+  top: 8vmax;
+  right: -30vmax;
+  background: radial-gradient(closest-side, var(--aurora-2), transparent);
+  animation: drift-b 56s ease-in-out infinite alternate;
+}
+
+.aurora span:nth-child(3) {
+  bottom: -40vmax;
+  left: 18vmax;
+  background: radial-gradient(closest-side, var(--aurora-3), transparent);
+  animation: drift-c 64s ease-in-out infinite alternate;
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Faint engineering grid that fades out toward the edges. */
+.grid-veil {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--glass-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--glass-line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 75%);
+}
+
+@keyframes drift-a {
+  to { transform: translate3d(14vmax, 10vmax, 0) scale(1.15); }
+}
+@keyframes drift-b {
+  to { transform: translate3d(-16vmax, 12vmax, 0) scale(0.9); }
+}
+@keyframes drift-c {
+  to { transform: translate3d(10vmax, -14vmax, 0) scale(1.1); }
+}
+
+/* ------------------------------------------------------------------------
+   Glass. `.glass` = a floating panel; `.sheet` = a page-sized panel.
+   The rim is a 1px gradient border drawn with a masked pseudo-element, so
+   it catches "light" at the top-left like a real pane.
+   ------------------------------------------------------------------------ */
+.glass,
+.sheet,
+.glass-pill {
+  position: relative;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  backdrop-filter: blur(22px) saturate(160%);
+  box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-edge);
+  border: 1px solid var(--glass-line);
+  isolation: isolate;
+}
+
+.glass::before,
+.sheet::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    140deg,
+    var(--glass-edge),
+    transparent 32%,
+    transparent 68%,
+    color-mix(in oklab, var(--accent-2) 45%, transparent)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.glass {
+  border-radius: 24px;
+}
+
+.sheet {
+  border-radius: 32px;
+}
+
+.glass-pill {
+  border-radius: 9999px;
+}
+
+/* Small glass for chips, inputs and tags: no backdrop blur (cheap). */
+.glass-chip {
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-line);
+  box-shadow: inset 0 1px 0 var(--glass-edge);
+  border-radius: 9999px;
+}
+
+/* Pointer spotlight: SpotlightTracker sets --sx/--sy on the hovered card. */
+[data-spotlight] {
+  --sx: 50%;
+  --sy: 50%;
+}
+
+[data-spotlight]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(420px circle at var(--sx) var(--sy), var(--spot), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+
+[data-spotlight]:hover::after {
+  opacity: 1;
+}
+
+.lift {
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.45s ease;
+}
+
+.lift:hover {
+  transform: translate3d(0, -4px, 0);
+}
+
+/* ------------------------------------------------------------------------
+   Type details
+   ------------------------------------------------------------------------ */
+.text-iridescent {
+  background: linear-gradient(100deg, var(--accent) 0%, var(--accent-2) 45%, var(--accent-3) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.eyebrow {
+  font-family: var(--font-signature);
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.hairline {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-edge), transparent);
+}
+
+.pulse-dot {
+  position: relative;
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: #3ddc97;
+}
+
+.pulse-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: #3ddc97;
+  animation: pulse 2.4s ease-out infinite;
+}
+
+@keyframes pulse {
+  from { transform: scale(1); opacity: 0.7; }
+  to { transform: scale(3); opacity: 0; }
+}
+
+/* Primary button: a lit bar with a slow sheen. */
+.btn-primary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow: hidden;
+  background: var(--foreground);
+  color: var(--background);
+  border-radius: 9999px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 10px 30px -12px color-mix(in oklab, var(--accent-2) 70%, transparent);
+}
+
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.35) 50%, transparent 65%);
+  transform: translateX(-120%);
+  animation: sheen 5s ease-in-out infinite;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  transform: none;
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid var(--glass-line);
+  background: var(--glass);
+  box-shadow: inset 0 1px 0 var(--glass-edge);
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-ghost:hover {
+  border-color: color-mix(in oklab, var(--accent) 60%, transparent);
+  transform: translateY(-2px);
+}
+
+@keyframes sheen {
+  0%, 60% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
+
+/* Form fields as recessed glass. */
+.field {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--glass-line);
+  background: color-mix(in oklab, var(--background) 55%, transparent);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+  padding: 0.8rem 1rem;
+  color: var(--foreground);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.field::placeholder {
+  color: color-mix(in oklab, var(--muted) 70%, transparent);
+}
+
+.field:focus {
+  outline: none;
+  border-color: color-mix(in oklab, var(--accent-2) 70%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent-2) 18%, transparent);
+}
+
+/* Segmented radio "pills" (project type picker). */
+.choice input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.choice span {
+  display: inline-block;
+  cursor: pointer;
+  border-radius: 9999px;
+  border: 1px solid var(--glass-line);
+  background: var(--glass);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  transition: all 0.25s ease;
+}
+
+.choice input:checked + span {
+  border-color: transparent;
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.choice input:focus-visible + span {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* FAQ accordions: native <details>, animated marker. */
+.faq summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq .faq-plus {
+  transition: transform 0.3s ease;
+}
+
+.faq[open] .faq-plus {
+  transform: rotate(45deg);
+}
+
+/* ------------------------------------------------------------------------
+   Floating stack: an orbiting constellation of glass logo chips.
+   Each ring rotates; each chip counter-rotates so the logo stays upright,
+   and bobs on its own phase. All transform-only.
+   ------------------------------------------------------------------------ */
+.orbit {
+  position: relative;
+  aspect-ratio: 1;
+  width: 100%;
+  max-width: 560px;
+  transform: translate3d(calc(var(--px, 0) * 14px), calc(var(--py, 0) * 14px), 0);
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.orbit-ring {
+  position: absolute;
+  inset: calc(50% - var(--r));
+  border-radius: 9999px;
+  border: 1px dashed var(--glass-line);
+  animation: spin var(--dur) linear infinite;
+  will-change: transform;
+}
+
+.orbit-ring[data-reverse] {
+  animation-direction: reverse;
+}
+
+.orbit-slot {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.orbit-chip {
+  --chip: calc(var(--size) * var(--size-scale, 1));
+  position: absolute;
+  left: calc(var(--chip) / -2);
+  top: calc(var(--chip) / -2);
+  width: var(--chip);
+  height: var(--chip);
+  animation: spin var(--dur) linear infinite reverse;
+}
+
+.orbit-ring[data-reverse] .orbit-chip {
+  animation-direction: normal;
+}
+
+.orbit-chip > span {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 30%;
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-edge);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  animation: bob 6s ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+
+.orbit-core {
+  position: absolute;
+  inset: 37%;
+  border-radius: 9999px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.55), transparent 40%),
+    conic-gradient(from 200deg, var(--accent-2), var(--accent-3), var(--accent), var(--accent-2));
+  box-shadow:
+    0 0 90px -10px color-mix(in oklab, var(--accent-2) 70%, transparent),
+    inset 0 0 40px rgba(255, 255, 255, 0.25);
+  animation: breathe 9s ease-in-out infinite;
+}
+
+.orbit-core::after {
+  content: "";
+  position: absolute;
+  inset: 9%;
+  border-radius: inherit;
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-edge);
+}
+
+.orbit-core > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bob {
+  0%, 100% { transform: translate3d(0, -4px, 0); }
+  50% { transform: translate3d(0, 4px, 0); }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+/* Logo band: rows drifting in opposite directions, edges feathered. */
+.marquee {
+  overflow: hidden;
+  /* The track is wider than the screen on purpose; don't let that width
+     leak into the page's intrinsic size (it widened <main> on phones). */
+  contain: inline-size;
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 0.75rem;
+  animation: marquee var(--dur, 60s) linear infinite;
+}
+
+.marquee[data-reverse] .marquee-track {
+  animation-direction: reverse;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+/* Pause decorative loops while they are off screen (MotionGate). */
+[data-offscreen] .orbit-ring,
+[data-offscreen] .orbit-chip,
+[data-offscreen] .orbit-chip > span,
+[data-offscreen] .orbit-core,
+[data-offscreen] .marquee-track {
+  animation-play-state: paused;
+}
+
+/* ------------------------------------------------------------------------
+   Scroll reveal with zero JavaScript, where the browser supports
+   scroll-driven animations. Elsewhere content simply shows.
+   ------------------------------------------------------------------------ */
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 20%;
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Entrance for hero content on first paint. */
+.rise {
+  animation: rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translate3d(0, 18px, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Long-form text inside glass (case studies, notes). */
+.prose-glass {
+  --tw-prose-body: var(--foreground);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-bullets: var(--accent);
+  --tw-prose-counters: var(--accent);
+  --tw-prose-links: var(--accent);
+  --tw-prose-hr: var(--glass-line);
+  --tw-prose-code: var(--accent-3);
+}
+
+.prose-glass h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.85em;
+  letter-spacing: -0.01em;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -38,28 +631,38 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+  .orbit {
+    transform: none;
+  }
 }
 
-html {
-  color-scheme: light;
+/* Phones: smaller blur radius, the most expensive part of glass. */
+@media (max-width: 640px) {
+  .glass,
+  .sheet,
+  .glass-pill {
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    backdrop-filter: blur(14px) saturate(150%);
+  }
+  .orbit-chip > span {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  /* A smaller constellation: two rings, smaller chips. */
+  .orbit {
+    max-width: 340px;
+  }
+  .orbit-ring:nth-of-type(3) {
+    display: none;
+  }
+  .orbit-chip {
+    --size-scale: 0.78;
+  }
 }
 
-html.dark {
-  color-scheme: dark;
-}
-
+/* Safety net: decorative layers must never create sideways scrolling. */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
+  overflow-x: clip;
 }
 
-::selection {
-  background: var(--accent);
-  color: var(--background);
-}
-
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
+} /* @layer components */

@@ -5,6 +5,10 @@ import { siteConfig } from "@/config/site";
 import { buildMetadata } from "@/lib/metadata";
 import { breadcrumbList, faqPage, serviceSchema } from "@/lib/schema";
 import { JsonLd } from "@/components/json-ld";
+import { ArrowIcon, Container, PageHero, SectionHeading } from "@/components/ui/section";
+import { Faq } from "@/components/ui/faq";
+import { ICONS, type IconId } from "@/components/stack/icons";
+import { StackLogo } from "@/components/stack/stack-logo";
 
 export const metadata: Metadata = buildMetadata({
   title: "Services",
@@ -13,7 +17,16 @@ export const metadata: Metadata = buildMetadata({
   path: "/services",
 });
 
-const PACKAGES = [
+const PACKAGES: {
+  id: string;
+  name: string;
+  description: string;
+  included: string[];
+  excluded: string[];
+  startingPrice: string;
+  icons: IconId[];
+  featured?: boolean;
+}[] = [
   {
     id: "ai-chatbot",
     name: "AI Chatbot Implementation",
@@ -30,6 +43,8 @@ const PACKAGES = [
       "Custom model training or fine-tuning",
     ],
     startingPrice: PRICING.aiChatbot.startingPrice,
+    icons: ["openai", "supabase", "typescript"],
+    featured: true,
   },
   {
     id: "automation-workflow",
@@ -44,6 +59,7 @@ const PACKAGES = [
     ],
     excluded: ["CRM licensing or platform subscription costs", "Data migration from legacy systems"],
     startingPrice: PRICING.automationWorkflow.startingPrice,
+    icons: ["n8n", "make", "hubspot"],
   },
   {
     id: "web-platform",
@@ -58,7 +74,15 @@ const PACKAGES = [
     ],
     excluded: ["Ongoing content writing", "Paid hosting or domain costs"],
     startingPrice: PRICING.webPlatform.startingPrice,
+    icons: ["next", "wordpress", "tailwind"],
   },
+];
+
+const PROCESS = [
+  { title: "Understand", body: "The business problem first: what breaks today, who it costs, and what done looks like." },
+  { title: "Map it by hand", body: "Run the current process manually until it's clear what's actually true — never automate guesses." },
+  { title: "Build small, ship early", body: "A working slice in production quickly, then improve it against real use." },
+  { title: "Hand it off", body: "Documentation your team can run with, so it keeps working without me." },
 ];
 
 const FAQ = [
@@ -84,9 +108,25 @@ const FAQ = [
   },
 ];
 
+function Check() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 h-4 w-4 shrink-0 text-accent">
+      <path strokeLinecap="round" strokeLinejoin="round" d="m5 12 4.5 4.5L19 7" />
+    </svg>
+  );
+}
+
+function Dash() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 h-4 w-4 shrink-0 text-muted">
+      <path strokeLinecap="round" d="M6 12h12" />
+    </svg>
+  );
+}
+
 export default function ServicesPage() {
   return (
-    <div className="mx-auto max-w-[70ch] px-6 py-16">
+    <>
       <JsonLd
         data={breadcrumbList([
           { name: "Home", path: "/" },
@@ -94,86 +134,115 @@ export default function ServicesPage() {
         ])}
       />
       {PACKAGES.map((pkg) => (
-        <JsonLd
-          key={pkg.id}
-          data={serviceSchema({ name: pkg.name, description: pkg.description })}
-        />
+        <JsonLd key={pkg.id} data={serviceSchema({ name: pkg.name, description: pkg.description })} />
       ))}
       <JsonLd data={faqPage(FAQ)} />
-      <h1 className="font-mono text-2xl font-medium tracking-tight">Services</h1>
-      <p className="mt-3 text-muted">
-        Three ways to work together. Starting prices are listed so we both
-        know quickly whether it&apos;s a fit.
-      </p>
 
-      <ul className="mt-10 flex flex-col gap-10">
-        {PACKAGES.map((pkg) => (
-          <li key={pkg.id} className="border-t border-border pt-8">
-            <article>
-              <h2 className="font-mono text-lg font-medium">{pkg.name}</h2>
-              <p className="mt-2 text-muted">{pkg.description}</p>
-              <p className="mt-3 font-mono text-sm">Starting at {pkg.startingPrice}</p>
-              <div className="mt-4 grid gap-6 sm:grid-cols-2">
-                <div>
-                  <h3 className="font-mono text-xs uppercase tracking-wide text-muted">
-                    Included
-                  </h3>
-                  <ul className="mt-2 flex flex-col gap-1">
-                    {pkg.included.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="font-mono text-xs uppercase tracking-wide text-muted">
-                    Not included
-                  </h3>
-                  <ul className="mt-2 flex flex-col gap-1 text-muted">
-                    {pkg.excluded.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
+      <PageHero
+        eyebrow="Services"
+        title={
+          <>
+            Three ways to <em className="text-iridescent">work together</em>.
+          </>
+        }
+        lead="Starting prices are listed so we both know quickly whether it's a fit. Every package is scoped after a short conversation — no surprises later."
+      />
+
+      <Container>
+        <ul className="grid gap-4 lg:grid-cols-3">
+          {PACKAGES.map((pkg) => (
+            <li
+              key={pkg.id}
+              data-spotlight
+              className={`reveal glass lift flex flex-col p-7 ${pkg.featured ? "ring-1 ring-[color-mix(in_oklab,var(--accent-2)_45%,transparent)]" : ""}`}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex gap-1.5">
+                  {pkg.icons.map((id) => (
+                    <span key={id} title={ICONS[id].title} className="glass-chip grid h-9 w-9 place-items-center rounded-xl">
+                      <StackLogo icon={ICONS[id]} size={17} />
+                    </span>
+                  ))}
                 </div>
               </div>
-            </article>
-          </li>
-        ))}
-      </ul>
-
-      <section className="mt-16 border-t border-border pt-10">
-        <h2 className="font-mono text-xl font-medium tracking-tight">
-          Frequently asked
-        </h2>
-        <dl className="mt-6 flex flex-col gap-6">
-          {FAQ.map((item) => (
-            <div key={item.question}>
-              <dt className="font-mono text-base font-medium">{item.question}</dt>
-              <dd className="mt-2 text-muted">{item.answer}</dd>
-            </div>
+              <h2 className="mt-6 font-serif text-3xl leading-tight tracking-tight">{pkg.name}</h2>
+              <p className="mt-3 leading-relaxed text-muted">{pkg.description}</p>
+              <p className="mt-6">
+                <span className="eyebrow block">Starting at</span>
+                <span className="font-serif text-5xl tracking-tight">{pkg.startingPrice}</span>
+                <span className="ml-2 font-mono text-xs text-muted">{PRICING.aiChatbot.currency}</span>
+              </p>
+              <div className="hairline my-6" />
+              <h3 className="eyebrow">Included</h3>
+              <ul className="mt-3 flex flex-col gap-2.5 text-sm">
+                {pkg.included.map((item) => (
+                  <li key={item} className="flex gap-2.5">
+                    <Check />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <h3 className="eyebrow mt-6">Not included</h3>
+              <ul className="mt-3 flex flex-col gap-2.5 text-sm text-muted">
+                {pkg.excluded.map((item) => (
+                  <li key={item} className="flex gap-2.5">
+                    <Dash />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/contact" prefetch={false} className="mt-auto pt-8">
+                <span className={`${pkg.featured ? "btn-primary" : "btn-ghost"} w-full justify-center px-5 py-3 font-mono text-sm`}>
+                  Discuss this package <ArrowIcon />
+                </span>
+              </Link>
+            </li>
           ))}
-        </dl>
+        </ul>
+      </Container>
+
+      <section className="py-20">
+        <Container>
+          <SectionHeading
+            className="reveal"
+            eyebrow="Process"
+            title={
+              <>
+                How every project <em className="text-iridescent">runs</em>.
+              </>
+            }
+          />
+          <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {PROCESS.map((step, i) => (
+              <li key={step.title} data-spotlight className="reveal glass p-6">
+                <span className="glass-chip grid h-10 w-10 place-items-center font-mono text-sm text-accent">{i + 1}</span>
+                <h3 className="mt-5 font-serif text-2xl tracking-tight">{step.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted">{step.body}</p>
+              </li>
+            ))}
+          </ol>
+        </Container>
       </section>
 
-      <section className="mt-16 border-t border-border pt-10">
-        <h2 className="font-mono text-xl font-medium tracking-tight">
-          Ready to start?
-        </h2>
-        <p className="mt-3 text-muted">
-          Tell me about the project and I&apos;ll follow up.
-        </p>
-        <Link
-          href="/contact"
-          className="mt-5 inline-block rounded bg-foreground px-5 py-2.5 font-mono text-sm text-background transition-opacity hover:opacity-90"
-        >
-          Get in touch
-        </Link>
-        <p className="mt-3 text-sm text-muted">
-          Or email directly:{" "}
-          <a href={`mailto:${siteConfig.email}`} className="text-accent underline underline-offset-4">
-            {siteConfig.email}
-          </a>
-        </p>
+      <section className="pb-10">
+        <Container className="grid gap-10 lg:grid-cols-[1fr_1.4fr]">
+          <SectionHeading
+            className="reveal"
+            eyebrow="FAQ"
+            title="Frequently asked."
+            lead={
+              <>
+                Something else?{" "}
+                <a href={`mailto:${siteConfig.email}`} className="text-accent underline underline-offset-4">
+                  Email me
+                </a>{" "}
+                — I read every message myself.
+              </>
+            }
+          />
+          <Faq items={FAQ} />
+        </Container>
       </section>
-    </div>
+    </>
   );
 }

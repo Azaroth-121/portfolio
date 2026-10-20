@@ -61,3 +61,12 @@ export function getAllNotes(): NoteEntry[] {
 export function getNoteBySlug(slug: string): NoteEntry | undefined {
   return getAllNotes().find((entry) => entry.slug === slug);
 }
+
+/** ~220 words a minute, never less than one. */
+export function readingMinutes(text: string): number {
+  return Math.max(1, Math.round(text.split(/\s+/).filter(Boolean).length / 220));
+}
+
+export function formatDate(date: string): string {
+  return new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+}

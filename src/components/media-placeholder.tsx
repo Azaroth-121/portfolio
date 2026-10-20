@@ -1,11 +1,10 @@
-export function MediaPlaceholder({ label }: { label: string }) {
-  return (
-    <div
-      role="img"
-      aria-label={`Placeholder: ${label} not yet added`}
-      className="my-6 flex h-48 w-full items-center justify-center rounded border border-dashed border-border bg-[repeating-linear-gradient(135deg,transparent,transparent_10px,var(--color-border)_10px,var(--color-border)_11px)] text-center font-mono text-xs text-muted"
-    >
-      <span className="bg-background px-3 py-1">{label} — TODO: add</span>
-    </div>
-  );
+/**
+ * Marks where a screenshot or diagram should go in a case study. Renders
+ * nothing on the public site — a "TODO" box reads as unfinished to a
+ * visitor — so the reminders live only in the MDX source until the real
+ * images are added.
+ */
+export function MediaPlaceholder(props: { label: string }) {
+  void props;
+  return null;
 }

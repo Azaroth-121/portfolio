@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { getAllNotes, getNoteBySlug } from "@/lib/content";
+import { formatDate, getAllNotes, getNoteBySlug, readingMinutes } from "@/lib/content";
 import { mdxComponents } from "@/lib/mdx-components";
 import { buildMetadata } from "@/lib/metadata";
 import { blogPostingSchema, breadcrumbList } from "@/lib/schema";
 import { JsonLd } from "@/components/json-ld";
+import { ArrowIcon, Container } from "@/components/ui/section";
 
 export function generateStaticParams() {
   return getAllNotes().map((note) => ({ slug: note.slug }));
@@ -37,7 +39,7 @@ export default async function NoteDetailPage({
   if (!note) notFound();
 
   return (
-    <article className="mx-auto max-w-[70ch] px-6 py-16">
+    <article>
       <JsonLd
         data={breadcrumbList([
           { name: "Home", path: "/" },
@@ -53,19 +55,32 @@ export default async function NoteDetailPage({
           datePublished: note.date,
         })}
       />
-      <time dateTime={note.date} className="font-mono text-xs text-muted">
-        {new Date(note.date).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })}
-      </time>
-      <h1 className="mt-2 font-mono text-2xl font-medium tracking-tight">
-        {note.title}
-      </h1>
-      <div className="prose prose-neutral dark:prose-invert mt-10 max-w-none prose-headings:font-mono prose-headings:font-medium prose-a:text-accent">
-        <MDXRemote source={note.content} components={mdxComponents} />
-      </div>
+      <header className="relative pb-10 pt-14 sm:pt-20">
+        <div className="grid-veil" />
+        <Container className="max-w-3xl">
+          <Link
+            href="/notes"
+            prefetch={false}
+            className="rise inline-flex items-center gap-2 font-mono text-xs text-muted hover:text-foreground"
+          >
+            <ArrowIcon className="h-3.5 w-3.5 rotate-180" /> All notes
+          </Link>
+          <p className="rise mt-6 flex flex-wrap gap-3 font-mono text-xs text-muted">
+            <time dateTime={note.date}>{formatDate(note.date)}</time>
+            <span aria-hidden="true">·</span>
+            <span>{readingMinutes(note.content)} min read</span>
+          </p>
+          <h1 className="rise mt-4 font-serif text-5xl leading-[1.02] tracking-tight sm:text-6xl">{note.title}</h1>
+          <p className="rise mt-5 text-lg leading-relaxed text-muted">{note.summary}</p>
+        </Container>
+      </header>
+      <Container className="max-w-3xl">
+        <div className="sheet px-6 py-10 sm:px-12 sm:py-14">
+          <div className="prose prose-glass max-w-none prose-p:leading-relaxed">
+            <MDXRemote source={note.content} components={mdxComponents} />
+          </div>
+        </div>
+      </Container>
     </article>
   );
 }
