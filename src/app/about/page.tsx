@@ -119,7 +119,25 @@ export default function AboutPage() {
           Experience
         </h2>
         <p className="mt-3">
-          For about two years, I architected and built production
+          Now, I&apos;m the software architect and core developer of a
+          multi-tenant AI SaaS platform for an early-stage company (unnamed
+          under NDA): a .NET 8 and Next.js 16 platform on PostgreSQL and
+          Azure, where AI recommendations must quote their source word for
+          word and every decision is approved by a person. I designed it,
+          built most of it, validated its AI against a real model, and
+          prepared it for a four-developer team. I also lead development of
+          an{" "}
+          <Link href="/work/ai-prompt-optimizer-extension" className="text-accent underline underline-offset-4">
+            AI prompt-optimization browser extension
+          </Link>
+          . See the{" "}
+          <Link href="/work/governed-ai-saas-platform" className="text-accent underline underline-offset-4">
+            platform case study
+          </Link>
+          .
+        </p>
+        <p className="mt-3">
+          Before that, for about two years, I architected and built production
           infrastructure for a B2B technology company (unnamed under NDA):
           client-server configuration, backend and frontend systems,
           automation workflows, RAG-based conversational AI, and CRM and
@@ -140,9 +158,10 @@ export default function AboutPage() {
       <section className="mt-14 border-t border-border pt-10">
         <h2 className="font-mono text-xl font-medium tracking-tight">Now</h2>
         <p className="mt-3">
-          I&apos;m available for AI chatbot implementation, automation
-          workflow builds, and web platform work — for remote clients and for
-          local Davao businesses. I work PHT (UTC+8); see{" "}
+          I&apos;m open to full-time AI and full-stack engineering roles, and
+          available for AI chatbot implementation, automation workflow
+          builds, and web platform work — for remote clients and for local
+          Davao businesses. I work PHT (UTC+8); see{" "}
           <Link href="/contact" className="text-accent underline underline-offset-4">
             /contact
           </Link>{" "}

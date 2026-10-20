@@ -12,24 +12,38 @@ export const metadata: Metadata = buildMetadata({
 });
 
 const SELECTED_WORK_SLUGS = [
+  "governed-ai-saas-platform",
+  "ai-prompt-optimizer-extension",
   "retrieval-augmented-chatbot",
-  "voice-call-routing-automation",
-  "calcsprint",
-  "gps-gsm-emergency-alert-device",
+  "davao-digital-storefront",
 ];
 
 const CAPABILITIES = [
   {
-    title: "RAG & AI systems",
-    items: ["RAG architecture", "Vector search", "Prompt engineering", "Conversational AI"],
-  },
-  {
-    title: "Automation workflows",
-    items: ["n8n", "Make.com", "CRM integration (HubSpot)", "Telephony (RingCentral)"],
+    title: "AI & LLM systems",
+    items: [
+      "RAG architecture",
+      "Verified citations & output guardrails",
+      "Prompt-injection testing",
+      "Real-model evaluation",
+      "OpenAI API",
+    ],
   },
   {
     title: "Full-stack web",
-    items: ["React", "TypeScript", "Tailwind CSS", "WordPress", "Supabase"],
+    items: ["TypeScript", "React", "Next.js", "Node.js", "Tailwind CSS", "Chrome extensions", "WordPress"],
+  },
+  {
+    title: "Backend & cloud",
+    items: [".NET 8 / C#", "PostgreSQL", "EF Core & Drizzle", "Azure (Container Apps, Bicep)", "Supabase", "Docker"],
+  },
+  {
+    title: "Automation workflows",
+    items: ["n8n", "Make.com", "CRM integration", "Telephony APIs"],
+  },
+  {
+    title: "Security & quality",
+    items: ["Multi-tenant isolation", "Auth (Entra ID, JWT rotation)", "Automated testing", "CI with security gates"],
   },
   {
     title: "Embedded hardware",
@@ -52,10 +66,11 @@ export default function Home() {
             {siteConfig.name}
           </h1>
           <p className="mt-4 max-w-[52ch] text-lg">
-            Kurt Rainier Sacay is an AI implementation and full-stack engineer
-            based in Davao City, Philippines, available for RAG systems,
-            automation workflows, and web platform builds — for remote
-            clients worldwide and local Davao businesses.
+            Kurt Rainier Sacay is an AI and full-stack engineer based in Davao
+            City, Philippines. I build AI features people can trust — every
+            claim cited, every decision approved by a human — on production
+            platforms in .NET, Next.js, PostgreSQL and Azure. Available for
+            full-time roles and project work, remote or in Davao.
           </p>
           <p className="mt-4 max-w-[52ch] text-lg text-muted">
             I don&apos;t consider something done until it&apos;s still

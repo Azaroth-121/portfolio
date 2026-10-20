@@ -1,8 +1,8 @@
 export const siteConfig = {
   name: "Kurt Rainier Sacay",
-  title: "Kurt Rainier Sacay — AI Implementation & Full-Stack Engineer",
+  title: "Kurt Rainier Sacay — AI & Full-Stack Engineer",
   description:
-    "Kurt Rainier Sacay is an AI implementation and full-stack engineer based in Davao City, Philippines, building RAG systems, automation workflows, and production web platforms.",
+    "Kurt Rainier Sacay is an AI and full-stack engineer based in Davao City, Philippines, building governed AI features, multi-tenant SaaS platforms on .NET and Next.js, RAG systems, and automation workflows.",
   // TODO: set NEXT_PUBLIC_SITE_URL in the Vercel project before launch.
   url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
   email: "iamkurtrainiersacay@gmail.com",

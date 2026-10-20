@@ -8,7 +8,7 @@ import { JsonLd } from "@/components/json-ld";
 export const metadata: Metadata = buildMetadata({
   title: "Work",
   description:
-    "Case studies from Kurt Rainier Sacay's client and personal work — RAG systems, automation, full-stack web, and embedded hardware.",
+    "Case studies from Kurt Rainier Sacay's client and personal work — governed AI platforms, RAG systems, browser extensions, automation, full-stack web, and embedded hardware.",
   path: "/work",
 });
 
@@ -25,8 +25,9 @@ export default function WorkIndexPage() {
       />
       <h1 className="font-mono text-2xl font-medium tracking-tight">Work</h1>
       <p className="mt-3 text-muted">
-        Case studies from client work and personal builds — RAG systems,
-        automation, full-stack web, and embedded hardware.
+        Case studies from client work and personal builds — governed AI
+        platforms, RAG systems, browser extensions, automation, full-stack
+        web, and embedded hardware.
       </p>
       <ul className="mt-10 flex flex-col gap-8">
         {work.map((entry) => (

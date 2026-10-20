@@ -1,0 +1,62 @@
+---
+title: "AI Prompt-Optimization Browser Extension"
+slug: "ai-prompt-optimizer-extension"
+summary: "A Chrome/Edge extension and paid web app that rewrites a rough prompt into a structured brief — with usage limits checked before any model spend and guardrails that stop the model from doing the task itself."
+role: "Lead Developer"
+stack: ["TypeScript", "Chrome Extension (MV3)", "Next.js", "PostgreSQL", "Drizzle", "OpenAI"]
+year: "2026"
+---
+
+## Problem
+
+People type vague one-line prompts into AI tools and get vague answers. The
+product (built for a company unnamed under NDA) sits in the browser and turns
+what you typed into a 150–400 word structured brief: audience, constraints,
+format, acceptance criteria. It had to be cheap to run, impossible to abuse
+for free model access, and never "helpfully" answer the question instead of
+improving it.
+
+## Approach
+
+I designed the optimize request as a strict pipeline where every expensive or
+risky step is guarded by a cheaper one before it:
+
+1. Verify the access token and that the account is active
+2. Check the input against the plan's length limit
+3. Check usage against the plan's request and token limits — **before any
+   model call is paid for**
+4. Record the request in a usage ledger (duplicate requests are rejected)
+5. Call the model with structured outputs
+6. Validate the output's shape
+7. Run an execution-leak check: reject output that does the task ("here is
+   the answer…") instead of improving the prompt
+8. Return the improved prompt, upgrade notes and remaining usage
+
+## Architecture
+
+- **Monorepo:** pnpm workspaces + Turborepo, with shared packages for auth,
+  billing, database, prompts, validation and types
+- **Extension:** Manifest V3 with popup, background service worker and
+  content script
+- **Web app + API:** Next.js with a dashboard and admin panel
+- **Auth:** NextAuth sessions for the web; a separate JWT access/refresh pair
+  for the extension, with server-side revocation and refresh-token rotation
+  that revokes the whole token family if a stolen token is reused
+- **Data:** PostgreSQL with Drizzle ORM; the usage ledger is the
+  safety-critical table that limits are computed from
+- **Payments:** PayPal orders and webhooks with idempotent event handling
+- **Hosting:** Azure Container Apps with a scheduled job for plan-expiry
+  reminders
+
+## Result
+
+Shipped as a working extension and web app with free and paid plans,
+enforced usage limits, and a review workflow for contributions from two
+collaborators.
+
+## What I'd do differently
+
+I'd have made refresh tokens revocable and rotating from day one. The first
+version issued stateless 30-day refresh tokens that couldn't be withdrawn,
+and retrofitting a token table and rotation into a live product was more work
+than building it in at the start.

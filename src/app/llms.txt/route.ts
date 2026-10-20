@@ -14,6 +14,7 @@ export async function GET() {
     "",
     `Location: ${siteConfig.location.city}, ${siteConfig.location.region}, ${siteConfig.location.country} (${siteConfig.location.timezone})`,
     `Email: ${siteConfig.email}`,
+    `Open to: full-time AI and full-stack engineering roles (TypeScript/React/Next.js, .NET 8/C#, PostgreSQL, Azure, LLM integration), remote or Davao-based.`,
     `Available for: AI chatbot implementation (RAG on your own documents), automation workflow builds (n8n/Make.com, CRM and telephony integrations), and web platform builds (Next.js or WordPress, SEO-correct from day one).`,
     "",
     "## Pages",

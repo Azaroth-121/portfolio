@@ -1,0 +1,55 @@
+---
+title: "WannaCry: Anatomy of a Worm"
+slug: "wannacry-anatomy-of-a-worm"
+summary: "An interactive classroom simulation of how the 2017 WannaCry outbreak spread through vulnerable networks — and which defenses would have stopped it. No exploit or malware code, ever."
+role: "Solo builder"
+stack: ["Next.js", "TypeScript", "Framer Motion", "Vitest"]
+year: "2026"
+links:
+  - label: "Source on GitHub"
+    href: "https://github.com/Azaroth-121/wannacry-simulator"
+---
+
+## Problem
+
+WannaCry is one of the best case studies in security, but it's hard to
+teach. Slides can't show how a worm moves from machine to machine, and a
+real demonstration is out of the question. I wanted students to *see* the
+spread and test the defenses themselves, safely.
+
+## Approach
+
+Everything is a simulation. Hosts, packets, vulnerabilities and infections
+are plain JavaScript state in the browser. Nothing makes a network request,
+runs a process or downloads code, and the safety boundary is documented
+throughout the source.
+
+- **Simulator:** an animated network diagram, live stats, an event timeline,
+  and an "attacker console" (`scan`, `launch wannacry`, `killswitch on`),
+  with a Wireshark-style packet view and a SIEM-style alert feed driven by
+  the same state
+- **Defense lab:** toggle patching, SMBv1, network segmentation and the kill
+  switch, and compare against an unpatched baseline side by side
+- **Learn pages** and a **presentation mode** for teaching from the front of
+  a room
+
+## Architecture
+
+- Next.js App Router for the pages
+- A pure, framework-agnostic simulation engine: a deterministic state
+  machine with propagation rules, fictional network presets (classroom,
+  hospital, office, enterprise) and defense scenarios
+- A `requestAnimationFrame` hook drives the engine; the layout is
+  deterministic, so the same scenario always plays out the same way
+- Unit tests cover propagation rules, defense scenarios and determinism
+
+## Result
+
+A complete teaching tool with four network presets, five defense scenarios
+and a projector-ready walkthrough, published as open source.
+
+## What I'd do differently
+
+I'd make the engine's determinism a first-class feature in the UI — a seed
+students can share — so a whole class can replay exactly the same outbreak
+and compare what each defense changed.

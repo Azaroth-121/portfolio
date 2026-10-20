@@ -1,0 +1,55 @@
+---
+title: "Davao Digital Storefront"
+slug: "davao-digital-storefront"
+summary: "One-page, mobile-first storefronts for small Davao businesses — about 3 KB per page, zero JavaScript, and GCash / QR Ph payments with no fees and no merchant account."
+role: "Solo builder"
+stack: ["Node.js", "Express", "PostgreSQL", "Supabase", "Sharp"]
+year: "2026"
+---
+
+## Problem
+
+Most small businesses in Davao — carinderias, sari-sari stores, home bakers —
+sell through Facebook posts and chat. They need a simple page with their
+menu, prices, hours and a way to pay, that they can update themselves from a
+phone on mobile data. Existing website builders are too heavy, too
+expensive, or need a payment-gateway account a small business can't get.
+
+## Approach
+
+I designed for the slowest phone on the worst connection:
+
+- The public page is server-rendered HTML with inline CSS and **zero
+  JavaScript**, about 3 KB gzipped, with WebP images that lazy-load
+- Owners pay nothing extra: they upload their **own** GCash, Maya or QR Ph
+  code and customers pay them directly
+- The owner admin works without JavaScript, and a small script shrinks phone
+  photos *before* upload so they go through on slow data
+- Deliberately not built yet: online ordering. Customers already message the
+  owner to order, so I'm waiting for pilots to ask for it
+
+## Architecture
+
+- Node.js + Express, server-rendered pages
+- PostgreSQL: Supabase in production, PGlite (real Postgres, in-process)
+  locally, so there's nothing to install
+- Images processed with Sharp; the payment QR is kept lossless so it stays
+  scannable
+- Open Graph tags for Facebook link previews and schema.org LocalBusiness data
+- Security: scrypt passwords, hashed session tokens in HttpOnly cookies,
+  login throttling, cross-origin POST rejection, a strict Content Security
+  Policy
+- CLI scripts to onboard a business, which starts hidden until the owner
+  previews and publishes it
+
+## Result
+
+A working platform with a demo storefront, ready for pilot businesses, that
+runs on free hosting tiers until there's a paying client.
+
+## What I'd do differently
+
+I'd budget for paid hosting from the first pilot. The free tiers work, but the
+web service sleeps after 15 minutes without traffic and the first visit then
+takes about a minute — a bad first impression for a customer standing at the
+counter. An uptime ping keeps it awake, but that's a workaround, not a plan.

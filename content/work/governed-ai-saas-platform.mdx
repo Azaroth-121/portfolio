@@ -1,0 +1,74 @@
+---
+title: "Governed AI Platform for Organizational Intelligence"
+slug: "governed-ai-saas-platform"
+summary: "A multi-tenant SaaS that measures how well an organization runs, finds its gaps, and uses AI to propose fixes — where every AI claim must quote its source and a human approves every decision."
+role: "Software Architect & Core Developer"
+stack: [".NET 8", "C#", "Next.js 16", "PostgreSQL", "Azure", "OpenAI"]
+year: "2026"
+outcome: "AI recommendations with 0% unverifiable quotes across 63 real-model analyses, 0 of 15 prompt-injection attempts followed, at about $0.0007 per analysis."
+---
+
+## Problem
+
+An early-stage company (unnamed under NDA) needed a platform that assesses an
+organization's maturity, scores it, turns the weak spots into a tracked
+roadmap, and uses AI to read the company's own documents and suggest
+improvements. The hard requirement: AI output must never quietly become fact.
+Customers had to be able to trust every number and every suggestion, and see
+where it came from.
+
+## Approach
+
+I treated **trust as the product**, and the AI as one advisor inside it. The
+platform's records are the source of truth; the model only proposes.
+
+- Every AI recommendation must quote the source document **word for word**. If
+  the quote isn't in the document, the answer is rejected before anyone sees it.
+- Nothing the AI proposes becomes actionable until a person with decision
+  rights — and never the person who asked — approves it. Decisions are
+  immutable and every state change is audited.
+- Before trusting a prompt, I tested it against a real model on a corpus of
+  synthetic company documents, including PDFs, Word files, contradictions,
+  "tempting" documents with no real gap, and prompt-injection traps.
+
+## Architecture
+
+- **API:** .NET 8 minimal APIs as a modular monolith, EF Core 8 on
+  PostgreSQL, built so three teams can work in separate modules
+- **Web:** Next.js 16 + React 19 dashboard with Microsoft Entra ID sign-in;
+  every number is labeled as observed fact, AI inference, proposal, or
+  approved decision
+- **Evidence layer:** document upload with SHA-256 provenance, four
+  classification levels enforced on every read, permission-aware search with
+  citations, and a connector registry that needs a second administrator's
+  approval
+- **AI path:** one model gateway that logs every call (model, prompt version,
+  tokens, latency) with a kill switch, plus content-free rejection telemetry
+- **Decision loop:** recommendation → human decision → action → measured
+  outcome → lesson learned
+- **Infrastructure:** Azure Container Apps, Bicep, Key Vault, Blob Storage,
+  Postgres Flexible Server; GitHub Actions with tests, secret scanning and
+  dependency-vulnerability gates
+
+## Result
+
+- Phase 1 (assessment → scoring → gap detection → roadmap) proven end to end
+  on the company's own self-assessment
+- The full customer journey — upload, AI analysis with a verified citation,
+  approval by a second person, action, measured outcome, lesson — covered by
+  an automated end-to-end test, including cross-tenant attacks that never
+  reach the model
+- A one-rule prompt change, measured against the real model, took rejected
+  AI answers from **13% to 0%** and found **54 of 54** known gaps
+- 140+ automated tests, including a sweep of 64+ API routes for cross-tenant
+  leaks that caught and fixed a real bug
+- Codebase prepared for a four-developer expansion: 10 architecture decision
+  records, a threat model, onboarding and contribution guides
+
+## What I'd do differently
+
+The verbatim-quote check proves the AI's evidence is real, but not that its
+conclusion follows from it. Testing found cases where a genuine quote
+supported the wrong advice. I'd add deterministic checks on the reasoning
+earlier — for example, every number in a recommendation must appear in the
+document — instead of relying on human review to catch them.
